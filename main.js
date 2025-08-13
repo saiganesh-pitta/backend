@@ -255,7 +255,7 @@ app.post('/logout', async (req, res) => {
 })
 
 app.use( async (req, res,next) => {
-  //  user= req.session.user
+   user= req.session.user
    req.isLoggedIn= req.session.isLoggedIn
   // console.log('cookie check', req.session);
   next();

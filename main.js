@@ -40,11 +40,11 @@ const getDB=()=>{
   return _db;
 }
 
-const store = new MongoDBStore({
-  uri: URL,
-  databaseName: 'HousesData',
-  collection: 'sessions',
-})
+// const store = new MongoDBStore({
+//   uri: URL,
+//   databaseName: 'HousesData',
+//   collection: 'sessions',
+// })
 
 const rootDir=path.dirname(require.main.filename);
 
@@ -56,8 +56,21 @@ app.use(session({
   secret: 'HousesData',
   resave: false,
   saveUninitialized: false,
-  store:store,
+     proxy:true,
+   store: new MongoDBStore({
+    uri: URL,
+  databaseName: 'HousesData',
+  collection: 'sessions',
+  }),
+    cookie: {
+    secure: true,
+    // httpOnly: true,
+    sameSite: "none",
+     ttl: 14 * 24 * 60 * 60,
+     // maxAge: 1000 * 60 * 60 * 24 
+  }
 }))
+app.set("trut proxy",1)
 
 const randomString = (length) => {
   const characters = 'abcdefghijklmnopqrstuvwxyz';

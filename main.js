@@ -16,6 +16,17 @@ require('dotenv').config();
 
 const URL= process.env.URL;
 
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('./cloudinary');
+
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 
 let _db;
 const mongoConnect=(callback)=>{
@@ -59,14 +70,24 @@ const randomString = (length) => {
   return result;
 }
 
-const storage = multer.diskStorage({
-  destination:(req,file,cb)=>{
-   cb(null,"uploads/")
+// const storage = multer.diskStorage({
+//   destination:(req,file,cb)=>{
+//    cb(null,"uploads/")
+//   },
+//   filename:(req,file,cb)=>{ 
+//    cb(null,randomString(10) + '-' + file.originalname )
+//   }
+// })
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'uploads', // Cloudinary folder name
+    public_id: (req, file) => randomString(10) + '-' + file.originalname,
+    allowed_formats: ['jpg', 'jpeg', 'png'],
   },
-  filename:(req,file,cb)=>{ 
-   cb(null,randomString(10) + '-' + file.originalname )
-  }
-})
+});
+
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {

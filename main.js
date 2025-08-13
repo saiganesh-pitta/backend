@@ -17,8 +17,6 @@ require('dotenv').config();
 const URL= process.env.URL;
 
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('./cloudinary');
-
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
@@ -97,10 +95,13 @@ const fileFilter = (req, file, cb) => {
   }
 }
 
-const multerStorage = {
-  storage, fileFilter
-}
-app.use(multer(multerStorage).single('photo'))
+// const multerStorage = {
+//   storage, fileFilter
+// }
+// app.use(multer(multerStorage).single('photo'))
+const upload = multer({ storage, fileFilter });
+
+
 app.use(express.static(path.join(rootDir,'public')))
 app.use('/uploads',express.static(path.join(rootDir,'uploads')))
 // app.use('/findHome/uploads',express.static(path.join(rootDir,'uploads')))
@@ -308,7 +309,7 @@ app.get('/home/:id', async (req, res) => {
 // const upload = multer({ storage: multer.memoryStorage() });
 
 // incomming data from the inputs of "/"endpoint . and saving in allhomes DataBase.
-app.post('/', async (req,res)=>{
+app.post('/', upload.single('photo'), async (req,res)=>{
     const db=getDB();
     const { location, area, rent, BHK, sqft, more_details } = await req.body;
     const  photo = await req.file.path;
